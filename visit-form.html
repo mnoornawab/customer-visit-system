@@ -8,91 +8,62 @@
   <div class="container">
     <header>
       <h1>SIMA Eyewear</h1>
-      <h2>Customer Visit System</h2>
+      <h2>Record Customer Visit</h2>
+      <button onclick="window.location.href='index.html'" class="back-btn">← Back to Dashboard</button>
     </header>
     
-    <div class="tabs">
-      <button class="tab-btn active" onclick="showTab('recordVisit')">Record Visit</button>
-      <button class="tab-btn" onclick="showTab('weeklyCycle')">Weekly Cycle</button>
-    </div>
-    
-    <div id="recordVisit" class="tab-content active">
-      <form id="visitForm">
-        <div class="form-group">
-          <label for="salesRep">Sales Representative:</label>
-          <select id="salesRep" required>
-            <option value="">-- Select Rep --</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="area">Area:</label>
-          <select id="area" required disabled>
-            <option value="">-- Select Area --</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="customer">Customer:</label>
-          <select id="customer" required disabled>
-            <option value="">-- Select Customer --</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label>Brands/Units:</label>
-          <table id="brandUnits">
-            <thead>
-              <tr>
-                <th>Brand</th>
-                <th>Category</th>
-                <th>Units</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="brandTableBody"></tbody>
-          </table>
-          <button type="button" id="addBrand" class="btn-add">+ Add Brand</button>
-        </div>
-        
-        <div class="form-group">
-          <label for="notes">Notes:</label>
-          <textarea id="notes" rows="3"></textarea>
-        </div>
-        
-        <button type="submit" class="btn-submit">Submit Visit</button>
-      </form>
-    </div>
-    
-    <div id="weeklyCycle" class="tab-content">
-      <div class="weekly-cycle-container">
-        <h3>Weekly Visit Cycle</h3>
-        <p>View customers due for visits this week</p>
-        <button id="showWeeklyCycle" class="btn-cycle">Show Weekly Cycle</button>
-        <div id="cycleResults"></div>
+    <form id="visitForm">
+      <div class="form-group">
+        <label for="salesRep">Sales Representative:</label>
+        <select id="salesRep" required>
+          <option value="">-- Select Rep --</option>
+        </select>
       </div>
-    </div>
+      
+      <div class="form-group">
+        <label for="area">Area:</label>
+        <select id="area" required disabled>
+          <option value="">-- Select Area --</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="customer">Customer:</label>
+        <select id="customer" required disabled>
+          <option value="">-- Select Customer --</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="visitDate">Date of Visit:</label>
+        <input type="date" id="visitDate" required>
+      </div>
+      
+      <div class="form-group">
+        <label>Brands/Units:</label>
+        <table id="brandUnits">
+          <thead>
+            <tr>
+              <th>Brand</th>
+              <th>Category</th>
+              <th>Units</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="brandTableBody"></tbody>
+        </table>
+        <button type="button" id="addBrand" class="btn-add">+ Add Brand</button>
+      </div>
+      
+      <div class="form-group">
+        <label for="notes">Notes:</label>
+        <textarea id="notes" rows="3"></textarea>
+      </div>
+      
+      <button type="submit" class="btn-submit">Submit Visit</button>
+    </form>
   </div>
   
   <script src="script.js"></script>
-  <script>
-    function showTab(tabId) {
-      // Hide all tabs
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      // Deactivate all buttons
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
-      // Show selected tab
-      document.getElementById(tabId).classList.add('active');
-      
-      // Activate clicked button
-      event.currentTarget.classList.add('active');
-    }
-  </script>
 </body>
 </html>
