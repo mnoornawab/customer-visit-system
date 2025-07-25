@@ -11,7 +11,24 @@
         <a href="customer-mgmt.html">Manage Customers</a>
         <a href="reports.html">View Reports</a>
     </nav>
-    
+<!-- Add territory display -->
+<div id="customerInfo">
+  <p><strong>Territory:</strong> <span id="customerTerritory"></span></p>
+  <p><strong>Area:</strong> <span id="customerArea"></span></p>
+  <p><strong>Last Visit:</strong> <span id="lastVisitDate"></span></p>
+</div>
+
+<!-- Updated brand row template -->
+<table id="brandUnits">
+  <thead>
+    <tr>
+      <th>Brand (Category)</th>
+      <th>Units</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="brandTableBody"></tbody>
+</table>    
     <script src="script.js"></script>
 </body>
 </html>
