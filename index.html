@@ -2,34 +2,17 @@
 <html>
 <head>
   <title>SIMA Eyewear Dashboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
-    .btn {
-      display: block;
-      width: 200px;
-      margin: 20px auto;
-      padding: 10px;
-      background: #3498db;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>SIMA Eyewear</h1>
-  <h2>Customer Visit System</h2>
-  
-  <a href="visit-form.html" class="btn">Record Visit</a>
-  <button class="btn" onclick="alert('Weekly cycle will be shown here')">Weekly Visit Cycle</button>
-
-  <script>
-    // Basic script to test functionality
-    console.log("Dashboard loaded successfully");
-  </script>
+  <div class="container">
+    <h1>SIMA Eyewear</h1>
+    <div class="dashboard-options">
+      <a href="visit-form.html" class="dashboard-btn">Record Visit</a>
+      <button class="dashboard-btn" id="showWeeklyCycle">Weekly Visit Cycle</button>
+    </div>
+    <div id="weeklyCycleResults"></div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
