@@ -1,86 +1,75 @@
-// Configuration
-const API_URL = "YOUR_DEPLOYED_WEB_APP_URL";
+const API_URL = "https://script.google.com/macros/s/AKfycbxs43gvdb9SyVmF50XW2kr_f9_ylg1Pp2hMNeXtmeCMB-Tp-cFa043-7xlLzdpi7iIl9Q/exec";
 
-// DOM Elements
-const elements = {
-  salesRep: document.getElementById('salesRep'),
-  area: document.getElementById('area'),
-  customer: document.getElementById('customer'),
-  customerInfo: document.getElementById('customerInfo'),
-  brandTableBody: document.getElementById('brandTableBody'),
-  visitForm: document.getElementById('visitForm'),
-  addBrand: document.getElementById('addBrand')
-};
-
-// Initialize the form
 document.addEventListener('DOMContentLoaded', () => {
   loadSalesReps();
-  
-  // Event listeners
-  elements.salesRep.addEventListener('change', loadAreas);
-  elements.area.addEventListener('change', loadCustomers);
-  elements.addBrand.addEventListener('click', addBrandRow);
-  elements.visitForm.addEventListener('submit', submitVisit);
+  document.getElementById('salesRep').addEventListener('change', loadAreas);
+  document.getElementById('area').addEventListener('change', loadCustomers);
+  document.getElementById('addBrand').addEventListener('click', addBrandRow);
+  document.getElementById('visitForm').addEventListener('submit', submitVisit);
 });
 
-// Load sales representatives
 async function loadSalesReps() {
   try {
     const response = await fetch(`${API_URL}?action=getSalesReps`);
     const reps = await response.json();
     
-    elements.salesRep.innerHTML = '<option value="">-- Select Rep --</option>';
+    const select = document.getElementById('salesRep');
+    select.innerHTML = '<option value="">-- Select Sales Rep --</option>';
+    
     reps.forEach(rep => {
       const option = document.createElement('option');
-      option.value = rep[0]; // Assuming first column is name
-      option.textContent = rep[0];
-      elements.salesRep.appendChild(option);
+      option.value = rep.id;
+      option.textContent = rep.name;
+      option.dataset.territories = rep.territories.join(',');
+      select.appendChild(option);
     });
   } catch (error) {
     console.error("Error loading sales reps:", error);
+    alert("Failed to load sales reps. Please try again.");
   }
 }
 
-// Load areas for selected rep
 async function loadAreas() {
-  const rep = this.value;
-  elements.area.disabled = !rep;
-  elements.customer.disabled = true;
-  elements.area.innerHTML = '<option value="">-- Select Area --</option>';
-  elements.customer.innerHTML = '<option value="">-- Select Customer --</option>';
-  elements.customerInfo.innerHTML = '<p>Last Visit: <span id="lastVisitDate">Never</span></p>';
+  const repId = this.value;
+  const areaSelect = document.getElementById('area');
+  areaSelect.innerHTML = '<option value="">-- Select Area --</option>';
+  areaSelect.disabled = true;
   
-  if (!rep) return;
+  document.getElementById('customer').innerHTML = '<option value="">-- Select Customer --</option>';
+  document.getElementById('customer').disabled = true;
+  document.getElementById('customerInfo').innerHTML = '<p>Last Visit: <span id="lastVisitDate">Never</span></p>';
+  
+  if (!repId) return;
   
   try {
-    const response = await fetch(`${API_URL}?action=getAreasByRep&rep=${encodeURIComponent(rep)}`);
+    const response = await fetch(`${API_URL}?action=getAreasByRep&repId=${encodeURIComponent(repId)}`);
     const areas = await response.json();
     
     areas.forEach(area => {
       const option = document.createElement('option');
       option.value = area;
       option.textContent = area;
-      elements.area.appendChild(option);
+      areaSelect.appendChild(option);
     });
     
-    elements.area.disabled = false;
+    areaSelect.disabled = false;
   } catch (error) {
     console.error("Error loading areas:", error);
+    alert("Failed to load areas. Please try again.");
   }
 }
 
-// Load customers for selected area
 async function loadCustomers() {
-  const rep = elements.salesRep.value;
   const area = this.value;
-  elements.customer.disabled = !area;
-  elements.customer.innerHTML = '<option value="">-- Select Customer --</option>';
-  elements.customerInfo.innerHTML = '<p>Last Visit: <span id="lastVisitDate">Never</span></p>';
+  const repId = document.getElementById('salesRep').value;
+  const customerSelect = document.getElementById('customer');
+  customerSelect.innerHTML = '<option value="">-- Select Customer --</option>';
+  customerSelect.disabled = true;
   
   if (!area) return;
   
   try {
-    const response = await fetch(`${API_URL}?action=getCustomersByArea&rep=${encodeURIComponent(rep)}&area=${encodeURIComponent(area)}`);
+    const response = await fetch(`${API_URL}?action=getCustomersByArea&area=${encodeURIComponent(area)}&repId=${encodeURIComponent(repId)}`);
     const customers = await response.json();
     
     customers.forEach(customer => {
@@ -88,22 +77,22 @@ async function loadCustomers() {
       option.value = customer.tradingName;
       option.textContent = customer.tradingName;
       option.dataset.lastVisit = customer.lastVisit;
-      elements.customer.appendChild(option);
+      option.dataset.nextVisit = customer.nextVisit;
+      customerSelect.appendChild(option);
     });
     
-    elements.customer.disabled = false;
+    customerSelect.disabled = false;
   } catch (error) {
     console.error("Error loading customers:", error);
+    alert("Failed to load customers. Please try again.");
   }
 }
 
-// Show customer details when selected
-elements.customer.addEventListener('change', function() {
+document.getElementById('customer').addEventListener('change', function() {
   const selected = this.options[this.selectedIndex];
   document.getElementById('lastVisitDate').textContent = selected.dataset.lastVisit || "Never";
 });
 
-// Add brand/unit row
 async function addBrandRow() {
   try {
     const response = await fetch(`${API_URL}?action=getBrands`);
@@ -115,59 +104,86 @@ async function addBrandRow() {
         <select class="brand-select" required>
           <option value="">-- Select Brand --</option>
           ${brands.map(brand => 
-            `<option value="${brand.id}" data-category="${brand.category}">${brand.name}</option>`
+            `<option value="${brand.id}" 
+                    data-category1="${brand.category1}" 
+                    data-category2="${brand.category2}">
+              ${brand.name}
+            </option>`
           ).join('')}
         </select>
       </td>
-      <td class="brand-category"></td>
+      <td>
+        <select class="category-select" required>
+          <option value="">-- Select Category --</option>
+        </select>
+      </td>
       <td><input type="number" class="units-input" min="0" required></td>
       <td><button type="button" class="remove-btn">✕</button></td>
     `;
     
-    elements.brandTableBody.appendChild(row);
+    document.getElementById('brandTableBody').appendChild(row);
     
-    // Update category when brand changes
-    row.querySelector('.brand-select').addEventListener('change', function() {
+    // Update categories when brand changes
+    const brandSelect = row.querySelector('.brand-select');
+    const categorySelect = row.querySelector('.category-select');
+    
+    brandSelect.addEventListener('change', function() {
       const selected = this.options[this.selectedIndex];
-      row.querySelector('.brand-category').textContent = selected.dataset.category || '';
+      categorySelect.innerHTML = `
+        <option value="">-- Select Category --</option>
+        <option value="${selected.dataset.category1}">${selected.dataset.category1}</option>
+        <option value="${selected.dataset.category2}">${selected.dataset.category2}</option>
+      `;
     });
     
-    // Remove button
-    row.querySelector('.remove-btn').addEventListener('click', () => {
+    row.querySelector('.remove-btn').addEventListener('click', function() {
       row.remove();
     });
   } catch (error) {
     console.error("Error loading brands:", error);
+    alert("Failed to load brands. Please try again.");
   }
 }
 
-// Submit visit form
 async function submitVisit(event) {
   event.preventDefault();
   
+  const repSelect = document.getElementById('salesRep');
+  const repName = repSelect.options[repSelect.selectedIndex].textContent;
+  
   const formData = {
-    salesRep: elements.salesRep.value,
-    area: elements.area.value,
-    customer: elements.customer.value,
+    salesRepName: repName,
+    customer: document.getElementById('customer').value,
     notes: document.getElementById('notes').value,
     brands: []
   };
   
-  // Collect brand data
-  document.querySelectorAll('#brandTableBody tr').forEach(row => {
-    formData.brands.push({
-      id: row.querySelector('.brand-select').value,
-      name: row.querySelector('.brand-select option:checked').textContent,
-      category: row.querySelector('.brand-select option:checked').dataset.category,
-      units: row.querySelector('.units-input').value
-    });
-  });
+  // Validate customer selection
+  if (!formData.customer) {
+    alert("Please select a customer");
+    return;
+  }
   
-  // Validate
-  if (formData.brands.length === 0) {
+  // Collect brand data
+  const brandRows = document.querySelectorAll('#brandTableBody tr');
+  if (brandRows.length === 0) {
     alert("Please add at least one brand");
     return;
   }
+  
+  brandRows.forEach(row => {
+    const brandSelect = row.querySelector('.brand-select');
+    const brandOption = brandSelect.options[brandSelect.selectedIndex];
+    
+    const categorySelect = row.querySelector('.category-select');
+    
+    formData.brands.push({
+      brandId: brandSelect.value,
+      brandName: brandOption.textContent,
+      category: categorySelect.value,
+      units: row.querySelector('.units-input').value
+    });
+  });
   
   // Submit to Google Sheets
   try {
@@ -179,9 +195,13 @@ async function submitVisit(event) {
     
     const result = await response.text();
     alert(result);
-    elements.visitForm.reset();
-    elements.brandTableBody.innerHTML = '';
-    elements.customerInfo.innerHTML = '<p>Last Visit: <span id="lastVisitDate">Never</span></p>';
+    
+    // Reset form
+    document.getElementById('visitForm').reset();
+    document.getElementById('brandTableBody').innerHTML = '';
+    document.getElementById('customerInfo').innerHTML = '<p>Last Visit: <span id="lastVisitDate">Never</span></p>';
+    document.getElementById('area').disabled = true;
+    document.getElementById('customer').disabled = true;
   } catch (error) {
     console.error("Error submitting visit:", error);
     alert("Failed to save visit. Please check console for details.");
