@@ -1,7 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxs43gvdb9SyVmF50XW2kr_f9_ylg1Pp2hMNeXtmeCMB-Tp-cFa043-7xlLzdpi7iIl9Q/exec";
 
-const API_URL = "YOUR_DEPLOYED_WEB_APP_URL";
-
 // Initialize form if on record-visit page
 if (document.getElementById('visitForm')) {
   document.addEventListener('DOMContentLoaded', () => {
