@@ -1,13 +1,20 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxs43gvdb9SyVmF50XW2kr_f9_ylg1Pp2hMNeXtmeCMB-Tp-cFa043-7xlLzdpi7iIl9Q/exec";
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadSalesReps();
-  document.getElementById('salesRep').addEventListener('change', loadAreas);
-  document.getElementById('area').addEventListener('change', loadCustomers);
-  document.getElementById('addBrand').addEventListener('click', addBrandRow);
-  document.getElementById('visitForm').addEventListener('submit', submitVisit);
-  document.getElementById('showWeeklyCycle').addEventListener('click', showWeeklyCycle);
-});
+const API_URL = "YOUR_DEPLOYED_WEB_APP_URL";
+
+// Initialize form if on record-visit page
+if (document.getElementById('visitForm')) {
+  document.addEventListener('DOMContentLoaded', () => {
+    loadSalesReps();
+    document.getElementById('salesRep').addEventListener('change', loadAreas);
+    document.getElementById('area').addEventListener('change', loadCustomers);
+    document.getElementById('addBrand').addEventListener('click', addBrandRow);
+    document.getElementById('visitForm').addEventListener('submit', submitVisit);
+    
+    // Set default visit date to today
+    document.getElementById('visitDate').valueAsDate = new Date();
+  });
+}
 
 async function loadSalesReps() {
   try {
@@ -17,7 +24,7 @@ async function loadSalesReps() {
     const reps = await response.json();
     const select = document.getElementById('salesRep');
     
-    select.innerHTML = '<option value="">-- Select Sales Rep --</option>';
+    select.innerHTML = '<option value="">-- Select Rep --</option>';
     reps.forEach(rep => {
       const option = document.createElement('option');
       option.value = rep.id;
@@ -36,8 +43,10 @@ async function loadAreas() {
   areaSelect.innerHTML = '<option value="">-- Select Area --</option>';
   areaSelect.disabled = true;
   
-  document.getElementById('customer').innerHTML = '<option value="">-- Select Customer --</option>';
-  document.getElementById('customer').disabled = true;
+  if (document.getElementById('customer')) {
+    document.getElementById('customer').innerHTML = '<option value="">-- Select Customer --</option>';
+    document.getElementById('customer').disabled = true;
+  }
   
   if (!repId) return;
   
@@ -150,6 +159,7 @@ async function submitVisit(event) {
   const formData = {
     salesRepName: repName,
     customer: document.getElementById('customer').value,
+    visitDate: document.getElementById('visitDate').value,
     notes: document.getElementById('notes').value,
     brands: []
   };
@@ -203,6 +213,7 @@ async function submitVisit(event) {
     document.getElementById('brandTableBody').innerHTML = '';
     document.getElementById('area').disabled = true;
     document.getElementById('customer').disabled = true;
+    document.getElementById('visitDate').valueAsDate = new Date();
   } catch (error) {
     console.error("Error submitting visit:", error);
     alert("Failed to save visit. Please check console for details.");
@@ -210,29 +221,70 @@ async function submitVisit(event) {
 }
 
 async function showWeeklyCycle() {
-  const repId = document.getElementById('salesRep').value;
-  if (!repId) {
-    alert("Please select a sales rep first");
-    return;
-  }
+  const repSelect = document.createElement('select');
+  repSelect.id = 'cycleRepSelect';
+  repSelect.innerHTML = '<option value="">-- Select Rep --</option>';
   
   try {
-    const response = await fetch(`${API_URL}?action=getWeeklyCycle&repId=${repId}`);
-    if (!response.ok) throw new Error("Failed to fetch weekly cycle");
+    // Load sales reps
+    const response = await fetch(`${API_URL}?action=getSalesReps`);
+    if (!response.ok) throw new Error("Failed to fetch sales reps");
     
-    const dueCustomers = await response.json();
+    const reps = await response.json();
+    reps.forEach(rep => {
+      const option = document.createElement('option');
+      option.value = rep.id;
+      option.textContent = rep.name;
+      repSelect.appendChild(option);
+    });
+    
+    // Show rep selection dialog
+    const repId = await new Promise(resolve => {
+      const dialog = `
+        <div class="dialog-overlay">
+          <div class="dialog">
+            <h3>Select Sales Representative</h3>
+            <div id="repSelectContainer"></div>
+            <button id="confirmRep">Show Weekly Cycle</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.insertAdjacentHTML('beforeend', dialog);
+      document.getElementById('repSelectContainer').appendChild(repSelect);
+      
+      document.getElementById('confirmRep').addEventListener('click', () => {
+        document.body.removeChild(document.querySelector('.dialog-overlay'));
+        resolve(repSelect.value);
+      });
+    });
+    
+    if (!repId) return;
+    
+    // Get weekly cycle
+    const cycleResponse = await fetch(`${API_URL}?action=getWeeklyCycle&repId=${repId}`);
+    if (!cycleResponse.ok) throw new Error("Failed to fetch weekly cycle");
+    
+    const dueCustomers = await cycleResponse.json();
+    const resultsDiv = document.getElementById('weeklyCycleResults');
     
     if (dueCustomers.length === 0) {
-      alert("All customers have been visited recently. No customers due for visit.");
+      resultsDiv.innerHTML = '<p>All customers have been visited recently. No customers due for visit.</p>';
       return;
     }
     
-    let message = "Customers due for visit this week:\n\n";
+    let html = '<h3>Customers Due for Visit This Week</h3><ul>';
     dueCustomers.forEach(customer => {
-      message += `${customer.tradingName} (${customer.area}) - Last Visit: ${customer.lastVisit}\n`;
+      html += `
+        <li>
+          <strong>${customer.tradingName}</strong> (${customer.area})<br>
+          Last Visit: ${customer.lastVisit}
+        </li>
+      `;
     });
+    html += '</ul>';
     
-    alert(message);
+    resultsDiv.innerHTML = html;
   } catch (error) {
     console.error("Error loading weekly cycle:", error);
     alert("Error loading weekly cycle. Please check console for details.");
