@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Record Visit</title>
+  <title>SIMA Eyewear - Record Visit</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-    <h1>Record Customer Visit</h1>
+    <header>
+      <h1><img src="https://www.simaeyewear.co.za/wp-content/uploads/2022/08/SIMA-LOGO.png" alt="SIMA Eyewear" class="logo"></h1>
+      <h2>Record Customer Visit</h2>
+    </header>
+    
     <form id="visitForm">
       <div class="form-group">
         <label for="salesRep">Sales Representative:</label>
@@ -29,6 +33,7 @@
         </select>
         <div id="customerInfo">
           <p>Last Visit: <span id="lastVisitDate">Never</span></p>
+          <p>Next Scheduled: <span id="nextVisitDate">Not scheduled</span></p>
         </div>
       </div>
       
@@ -50,10 +55,12 @@
       
       <div class="form-group">
         <label for="notes">Notes:</label>
-        <textarea id="notes" rows="3"></textarea>
+        <textarea id="notes" rows="3" placeholder="Enter any additional notes about the visit..."></textarea>
       </div>
       
-      <button type="submit" class="btn-submit">Submit Visit</button>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">Submit Visit</button>
+      </div>
     </form>
   </div>
   
