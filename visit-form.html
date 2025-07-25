@@ -1,69 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>SIMA Eyewear - Record Visit</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Visit Form</title>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>SIMA Eyewear</h1>
-      <h2>Record Customer Visit</h2>
-      <button onclick="window.location.href='index.html'" class="back-btn">← Back to Dashboard</button>
-    </header>
-    
-    <form id="visitForm">
-      <div class="form-group">
-        <label for="salesRep">Sales Representative:</label>
-        <select id="salesRep" required>
-          <option value="">-- Select Rep --</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="area">Area:</label>
-        <select id="area" required disabled>
-          <option value="">-- Select Area --</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="customer">Customer:</label>
-        <select id="customer" required disabled>
-          <option value="">-- Select Customer --</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="visitDate">Date of Visit:</label>
-        <input type="date" id="visitDate" required>
-      </div>
-      
-      <div class="form-group">
-        <label>Brands/Units:</label>
-        <table id="brandUnits">
-          <thead>
-            <tr>
-              <th>Brand</th>
-              <th>Category</th>
-              <th>Units</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="brandTableBody"></tbody>
-        </table>
-        <button type="button" id="addBrand" class="btn-add">+ Add Brand</button>
-      </div>
-      
-      <div class="form-group">
-        <label for="notes">Notes:</label>
-        <textarea id="notes" rows="3"></textarea>
-      </div>
-      
-      <button type="submit" class="btn-submit">Submit Visit</button>
-    </form>
-  </div>
-  
-  <script src="script.js"></script>
+  <h1>Visit Form</h1>
+  <a href="index.html">Back to Dashboard</a>
 </body>
 </html>
