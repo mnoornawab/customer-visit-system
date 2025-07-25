@@ -1,1 +1,43 @@
+<form id="visitForm">
+  <div class="form-group">
+    <label for="salesRep">Sales Representative:</label>
+    <select id="salesRep" required>
+      <option value="">-- Select Rep --</option>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label for="customer">Customer:</label>
+    <select id="customer" required>
+      <option value="">-- Select Customer --</option>
+    </select>
+  </div>
+  
+  <div id="customerInfo" class="customer-info">
+    <!-- Customer details will appear here -->
+  </div>
+  
+  <div class="form-group">
+    <label>Brands/Units:</label>
+    <table id="brandUnits">
+      <thead>
+        <tr>
+          <th>Brand</th>
+          <th>Units</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="brandTableBody"></tbody>
+    </table>
+    <button type="button" id="addBrand" class="btn-add">+ Add Brand</button>
+  </div>
+  
+  <div class="form-group">
+    <label for="notes">Notes:</label>
+    <textarea id="notes" rows="3"></textarea>
+  </div>
+  
+  <button type="submit" class="btn-submit">Submit Visit</button>
+</form>
 
+<script src="script.js"></script>
